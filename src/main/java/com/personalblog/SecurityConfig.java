@@ -1,4 +1,4 @@
-package com.personalblog.article;
+package com.personalblog;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +28,7 @@ public class SecurityConfig {
             .userDetailsService(userDetailsService)
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/auth/register").permitAll()
-                    .requestMatchers("/admin").authenticated()
+                    .requestMatchers("/admin").hasRole("ADMIN")
                     .requestMatchers("/edit/**").authenticated()
                     .requestMatchers("/new").authenticated()
                     .anyRequest().permitAll()

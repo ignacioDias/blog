@@ -51,7 +51,7 @@ public class ArticleController {
         var newArticle = articleFromDB.get();
         var ownerOfArticleFromDB = articleFromDB.get().getOwner();
         if(!ownerOfArticleFromDB.equals(principal.getName())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         newArticle.setContent(requestedBody.getContent());
         articleRepository.save(newArticle);

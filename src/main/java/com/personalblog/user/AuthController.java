@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping
 public class AuthController {
 
     private final UserService userService;
@@ -20,6 +20,27 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
+            // Validate input
+            if (request.getUsername() == null || request.getUsername().trim().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new AuthResponse("Username is required", null));
+            }
+            
+            if (request.getUsername().length() < 3 || request.getUsername().length() > 50) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new AuthResponse("Username must be between 3 and 50 characters", null));
+            }
+            
+            if (request.getPassword() == null || request.getPassword().length() < 8) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new AuthResponse("Password must be at least 8 characters", null));
+            }
+            
+            if (request.getEmail() == null || !request.getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new AuthResponse("Invalid email format", null));
+            }
+            
             String role = request.getRole() != null ? request.getRole() : "USER";
             User user = userService.registerUser(
                 request.getUsername(), 
