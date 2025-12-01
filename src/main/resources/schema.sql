@@ -1,7 +1,8 @@
 CREATE TABLE users (
     username VARCHAR(50) PRIMARY KEY,
     password VARCHAR(255) NOT NULL,
-    mail VARCHAR(100) UNIQUE NOT NULL
+    email VARCHAR(100) UNIQUE NOT NULL,
+    role VARCHAR(20) NOT NULL DEFAULT 'USER'
 );
 
 CREATE TABLE articles (
