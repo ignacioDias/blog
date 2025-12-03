@@ -20,6 +20,7 @@ public class Article {
     private LocalDateTime createdAt;
     
     private String owner;
+    private String title;
     private String content;
 
 }

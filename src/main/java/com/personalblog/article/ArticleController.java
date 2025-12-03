@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +29,7 @@ public class ArticleController {
         this.articleRepository = articleRepository;
     }
 
+    @CrossOrigin(origins = "http://localhost:8080")
     @GetMapping("/article/{requestedId}")
     public ResponseEntity<Article> findById(@PathVariable Long requestedId) {
         var article = articleRepository.findById(requestedId);
@@ -59,7 +61,7 @@ public class ArticleController {
     }
     @PostMapping("/new") 
     public ResponseEntity<Void> createArticle(@RequestBody Article requestBody, UriComponentsBuilder ucb, Principal principal) {
-        var newArticle = new Article(null, LocalDateTime.now(), principal.getName(), requestBody.getContent());
+        var newArticle = new Article(null, LocalDateTime.now(),  principal.getName(), requestBody.getTitle(), requestBody.getContent());
         var saved = articleRepository.save(newArticle);
         var location = ucb.path("/article/{id}").buildAndExpand(saved.getId()).toUri();
         return ResponseEntity.created(location).build();
