@@ -18,18 +18,18 @@ getArticles().then(data => {
     if (!data) return; 
     data.forEach((article) => {
         const $currentArticleDiv = document.createElement("div");
-        const $link = document.createElement('a');
-        $link.href = "/article.html?id=" + article.id;        
+        $currentArticleDiv.style.cursor = "pointer";
+        $currentArticleDiv.onclick = () => {
+            window.location.href = "/article.html?id=" + article.id;
+        };
         
         const $currentArticleTitle = document.createElement("h3");
         $currentArticleTitle.textContent = article.title;
         
-        $link.appendChild($currentArticleTitle);
-        
         const $currentArticleDate = document.createElement("p");
         $currentArticleDate.textContent = article.createdAt;
         
-        $currentArticleDiv.appendChild($link);
+        $currentArticleDiv.appendChild($currentArticleTitle);
         $currentArticleDiv.appendChild($currentArticleDate);
         
         $articlesDiv.appendChild($currentArticleDiv);

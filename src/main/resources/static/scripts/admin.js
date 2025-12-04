@@ -18,18 +18,20 @@ getArticlesFromAdmin().then(data => {
     if (!data || !data.content) return; 
     data.content.forEach((article) => {
         const $currentArticleDiv = document.createElement("div");
-        const $link = document.createElement('a');
+        $currentArticleDiv.style.cursor = "pointer";
+        $currentArticleDiv.onclick = () => {
+            window.location.href = "/article.html?id=" + article.id;
+        };
+        
         const $deleteButton = document.createElement('button');
         const $editButton = document.createElement('button');
-        $link.href = "/article.html?id=" + article.id;        
         
         const $currentArticleTitle = document.createElement("h3");
         $currentArticleTitle.textContent = article.title;
         
-        $link.appendChild($currentArticleTitle);
-        
         $deleteButton.textContent = "Delete";
-        $deleteButton.onclick = async () => {
+        $deleteButton.onclick = async (e) => {
+            e.stopPropagation();
             if(confirm("Are you sure you want to delete this article?")) {
                 try {
                     const response = await fetch(`http://localhost:8080/delete/${article.id}`, {
@@ -48,11 +50,12 @@ getArticlesFromAdmin().then(data => {
         };
 
         $editButton.textContent = "Edit";
-        $editButton.onclick = () => {
+        $editButton.onclick = (e) => {
+            e.stopPropagation();
             window.location.href = "/edit.html?id=" + article.id;
         };
         
-        $currentArticleDiv.appendChild($link);
+        $currentArticleDiv.appendChild($currentArticleTitle);
         $currentArticleDiv.appendChild($editButton);
         $currentArticleDiv.appendChild($deleteButton);
         

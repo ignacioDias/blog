@@ -28,9 +28,11 @@ public class SecurityConfig {
             .userDetailsService(userDetailsService)
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/auth/register").permitAll()
-                    .requestMatchers("/admin").hasRole("ADMIN")
+                    .requestMatchers("/admin.html").authenticated()
+                    .requestMatchers("/admin").authenticated()
                     .requestMatchers("/edit/**").authenticated()
                     .requestMatchers("/new").authenticated()
+                    .requestMatchers("/delete/**").authenticated()
                     .anyRequest().permitAll()
             )
             .httpBasic(Customizer.withDefaults())
