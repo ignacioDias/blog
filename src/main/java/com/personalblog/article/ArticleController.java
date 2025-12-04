@@ -60,6 +60,7 @@ public class ArticleController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         newArticle.setContent(requestedBody.getContent());
+        newArticle.setTitle(requestedBody.getTitle());
         articleRepository.save(newArticle);
         return ResponseEntity.noContent().build();
     }

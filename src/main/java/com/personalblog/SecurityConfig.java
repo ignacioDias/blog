@@ -31,8 +31,11 @@ public class SecurityConfig {
                     .requestMatchers("/admin.html").authenticated()
                     .requestMatchers("/admin").authenticated()
                     .requestMatchers("/edit/**").authenticated()
+                    .requestMatchers("/edit.html").authenticated()
+                    .requestMatchers("/new.html").authenticated()
                     .requestMatchers("/new").authenticated()
                     .requestMatchers("/delete/**").authenticated()
+
                     .anyRequest().permitAll()
             )
             .httpBasic(Customizer.withDefaults())
