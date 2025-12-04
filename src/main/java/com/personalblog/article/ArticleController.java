@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:8080")
 public class ArticleController {
 
     private final ArticleRepository articleRepository;
@@ -29,7 +31,6 @@ public class ArticleController {
         this.articleRepository = articleRepository;
     }
 
-    @CrossOrigin(origins = "http://localhost:8080")
     @GetMapping("/article/{requestedId}")
     public ResponseEntity<Article> findById(@PathVariable Long requestedId) {
         var article = articleRepository.findById(requestedId);
@@ -46,6 +47,9 @@ public class ArticleController {
 
     @PutMapping("/edit/{requestedId}")
     public ResponseEntity<Void> editById(@PathVariable Long requestedId, @RequestBody Article requestedBody, Principal principal) {
+        if(requestedBody.getContent() == null || requestedBody.getContent().isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
         var articleFromDB = articleRepository.findById(requestedId);
         if(!articleFromDB.isPresent()) {
             return ResponseEntity.notFound().build();
@@ -61,6 +65,12 @@ public class ArticleController {
     }
     @PostMapping("/new") 
     public ResponseEntity<Void> createArticle(@RequestBody Article requestBody, UriComponentsBuilder ucb, Principal principal) {
+        if(requestBody.getTitle() == null || requestBody.getTitle().isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        if(requestBody.getContent() == null || requestBody.getContent().isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
         var newArticle = new Article(null, LocalDateTime.now(),  principal.getName(), requestBody.getTitle(), requestBody.getContent());
         var saved = articleRepository.save(newArticle);
         var location = ucb.path("/article/{id}").buildAndExpand(saved.getId()).toUri();
@@ -71,5 +81,14 @@ public class ArticleController {
         Sort.Direction direction = sortDirection.equalsIgnoreCase("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
         return ResponseEntity.ok(articleRepository.findByOwner(principal.getName(), pageable));
+    }
+
+    @DeleteMapping("/delete/{requestedId}")
+    public ResponseEntity<Void> deleteArticle(@PathVariable Long requestedId, Principal principal) {
+        if(!articleRepository.existsByIdAndOwner(requestedId, principal.getName())) {
+            return ResponseEntity.notFound().build();
+        }
+        articleRepository.deleteById(requestedId);
+        return ResponseEntity.noContent().build();
     }
 }
